@@ -1,14 +1,15 @@
-import os, json
+import os
 import google.generativeai as genai
 from flask import Flask, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 
 load_dotenv()
-app = Flask(__name__, static_url_path='', static_folder='.')
-
-# Cấu hình Gemini API
+app = Flask(__name__)
+# ✅ Cấu hình lại đúng cú pháp mới nhất của Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+# ⚠️ Dùng đúng tên model hiện có, không cần chữ 'models/'
+MODEL_NAME = "gemini-1.5-flash"  # hoặc gemini-1.5-pro nếu bạn cần kết quả chi tiết hơn
 
 PROMPT_TEMPLATE = """
 Bạn là một trợ lý AI chuyên tạo kịch bản video dưới dạng JSON.
@@ -64,3 +65,4 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
