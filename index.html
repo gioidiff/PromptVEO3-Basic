@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PromptVEO3 Basic</title>
+  <style>
+    body { font-family: sans-serif; background-color: #1c1f2b; color: #ecf0f1; margin: 0; padding: 20px; }
+    .container { display: flex; gap: 20px; justify-content: center; max-width: 1200px; margin: auto; }
+    .panel { flex: 1; background: #2b3245; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; }
+    h3 { margin-top: 0; border-bottom: 1px solid #3e4a61; padding-bottom: 8px; }
+    textarea, pre { width: 100%; background: #1c1f2b; color: #ecf0f1; border: 1px solid #3e4a61; border-radius: 6px; padding: 10px; font-size: 14px; box-sizing: border-box; }
+    textarea { height: 180px; resize: vertical; }
+    pre { height: 450px; overflow-y: auto; white-space: pre-wrap; word-wrap: break-word; }
+    button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+    #analyzeBtn { background-color: #27ae60; color: white; }
+    #clearBtn { background-color: #e74c3c; color: white; }
+    .buttons { margin-top: 15px; display: flex; gap: 10px; }
+    #loading { display: none; text-align: center; margin-top: 15px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="panel">
+      <h3>Nhập liệu</h3>
+      <label>Transcript:</label>
+      <textarea id="transcript" placeholder="Nhập kịch bản hoặc lời thoại..."></textarea>
+
+      <label>Mô tả nhân vật (tùy chọn):</label>
+      <textarea id="charDescription" placeholder="Ví dụ: nhân vật chính là Yeti, thân thiện, thích khám phá..."></textarea>
+
+      <div class="buttons">
+        <button id="analyzeBtn">Phân tích (F5)</button>
+        <button id="clearBtn">Xóa</button>
+      </div>
+
+      <div id="loading"><p>⏳ Đang phân tích, vui lòng chờ...</p></div>
+    </div>
+
+    <div class="panel">
+      <h3>Kết quả</h3>
+      <pre id="result">Chưa có kết quả phân tích...</pre>
+    </div>
+  </div>
+
+  <script>
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultArea = document.getElementById('result');
+    const loading = document.getElementById('loading');
+
+    analyzeBtn.addEventListener('click', async () => {
+      const transcript = document.getElementById('transcript').value.trim();
+      const charDesc = document.getElementById('charDescription').value.trim();
+      if (!transcript) return alert('⚠️ Vui lòng nhập Transcript!');
+
+      loading.style.display = 'block';
+      resultArea.textContent = '';
+      analyzeBtn.disabled = true;
+
+      try {
+        const response = await fetch('/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ transcript, character_description: charDesc })
+        });
+        const data = await response.json();
+        resultArea.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resultArea.textContent = '❌ Lỗi: ' + err.message;
+      } finally {
+        loading.style.display = 'none';
+        analyzeBtn.disabled = false;
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      document.getElementById('transcript').value = '';
+      document.getElementById('charDescription').value = '';
+      resultArea.textContent = 'Chưa có kết quả phân tích...';
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F5') {
+        e.preventDefault();
+        analyzeBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
