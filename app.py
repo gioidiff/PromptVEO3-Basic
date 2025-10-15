@@ -5,10 +5,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 app = Flask(__name__)
-# ✅ Cấu hình lại đúng cú pháp mới nhất của Gemini API
+# Cấu hình lại đúng cú pháp mới nhất của Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# ⚠️ Dùng đúng tên model hiện có, không cần chữ 'models/'
+# Dùng đúng tên model hiện có, không cần chữ 'models/'
 MODEL_NAME = "gemini-1.5-flash"  # hoặc gemini-1.5-pro nếu bạn cần kết quả chi tiết hơn
 
 PROMPT_TEMPLATE = """
@@ -65,4 +65,5 @@ def home():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+
 
