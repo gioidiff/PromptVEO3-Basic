@@ -67,7 +67,10 @@ def analyze():
         return jsonify(data_json)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    import traceback
+    print("❌ LỖI CHI TIẾT:\n", traceback.format_exc())  # in stack trace ra console
+    return jsonify({"error": str(e)}), 500
+
 
 
 @app.route('/')
@@ -78,3 +81,4 @@ def home():
 if __name__ == '__main__':
     # 6️⃣ Khởi chạy server
     app.run(host='0.0.0.0', port=5000)
+
