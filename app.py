@@ -4,19 +4,20 @@ import google.generativeai as genai
 from flask import Flask, request, jsonify, send_from_directory
 from dotenv import load_dotenv
 
-# Tải biến môi trường
+# 1️⃣ Tải biến môi trường
 load_dotenv()
 
+# 2️⃣ Cấu hình Flask
 app = Flask(__name__)
 
-# Cấu hình API key
+# 3️⃣ Cấu hình API key Gemini
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# ✅ Định nghĩa model name trước khi khởi tạo model
-MODEL_NAME = "gemini-1.5-flash"  # hoặc "gemini-1.5-pro" nếu cần chi tiết hơn
+# 4️⃣ Đặt tên model TRƯỚC khi khởi tạo
+MODEL_NAME = "gemini-1.5-flash"  # hoặc "gemini-1.5-pro"
 model = genai.GenerativeModel(MODEL_NAME)
 
-# Template prompt
+# 5️⃣ Prompt template
 PROMPT_TEMPLATE = """
 Bạn là một trợ lý AI chuyên tạo kịch bản video dưới dạng JSON.
 Hãy đọc đoạn transcript và chia nó thành các cảnh (scene) với cấu trúc JSON như sau:
@@ -47,17 +48,17 @@ def analyze():
     prompt = PROMPT_TEMPLATE.format(transcript=transcript, character_description=char_desc)
 
     try:
-        # ✅ Gọi Gemini để sinh nội dung
+        # ✅ Gọi Gemini API
         response = model.generate_content(prompt)
         text = response.text.strip()
 
-        # Làm sạch kết quả JSON
+        # Làm sạch định dạng JSON
         if '```json' in text:
             text = text.split('```json')[1].split('```')[0]
         elif '```' in text:
             text = text.split('```')[1]
 
-        # Thử parse JSON
+        # Cố gắng parse JSON
         try:
             data_json = json.loads(text)
         except:
@@ -75,4 +76,5 @@ def home():
 
 
 if __name__ == '__main__':
+    # 6️⃣ Khởi chạy server
     app.run(host='0.0.0.0', port=5000)
